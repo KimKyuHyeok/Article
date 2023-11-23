@@ -18,20 +18,20 @@ import java.time.LocalDateTime;
 @ToString
 @EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
-public class AuditingFields {
+public abstract class AuditingFields {
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @CreatedDate
-    @Column(nullable = false, updatable = false) private LocalDateTime createdAt;
+    @Column(nullable = false, updatable = false) protected LocalDateTime createdAt;
 
     @CreatedBy
-    @Column(nullable = false, length = 100, updatable = false) private String createdBy;
+    @Column(nullable = false, length = 100, updatable = false) protected String createdBy;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @LastModifiedDate
-    @Column(nullable = false) private LocalDateTime modifiedAt;
+    @Column(nullable = false) protected LocalDateTime modifiedAt;
 
     @LastModifiedBy
-    @Column(nullable = false, length = 100) private String modifiedBy;
+    @Column(nullable = false, length = 100) protected String modifiedBy;
 
 }
