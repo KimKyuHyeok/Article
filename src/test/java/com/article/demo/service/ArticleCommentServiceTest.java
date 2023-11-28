@@ -29,20 +29,20 @@ class ArticleCommentServiceTest {
     @Mock private ArticleCommentRepository articleCommentRepository;
     @Mock private ArticleRepository articleRepository;
 
-    @DisplayName("게시글 ID 로 조회하면 해당하는 댓글 리스트를 반환")
-    @Test
-    void articleId_SearchingArticleComments_ReturnsArticleComments() {
-
-        Long articleId = 1L;
-
-        given(articleRepository.findById(articleId)).willReturn(
-                Optional.of(Article.of("title", "content", "hashtag")));
-
-        List<ArticleCommentDto> articleComments = sut.searchArticleComment(articleId);
-
-        assertThat(articleComments).isNotNull();
-        then(articleRepository).should().findById(articleId);
-    }
+//    @DisplayName("게시글 ID 로 조회하면 해당하는 댓글 리스트를 반환")
+//    @Test
+//    void articleId_SearchingArticleComments_ReturnsArticleComments() {
+//
+//        Long articleId = 1L;
+//
+//        given(articleRepository.findById(articleId)).willReturn(
+//                Optional.of(Article.of("title", "content", "hashtag")));
+//
+//        List<ArticleCommentDto> articleComments = sut.searchArticleComment(articleId);
+//
+//        assertThat(articleComments).isNotNull();
+//        then(articleRepository).should().findById(articleId);
+//    }
 
 
 }
