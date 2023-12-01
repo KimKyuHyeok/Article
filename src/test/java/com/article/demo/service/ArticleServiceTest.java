@@ -1,7 +1,6 @@
 package com.article.demo.service;
 
 import com.article.demo.domain.Article;
-import com.article.demo.domain.Hashtag;
 import com.article.demo.domain.UserAccount;
 import com.article.demo.domain.type.SearchType;
 import com.article.demo.dto.*;
@@ -155,20 +154,20 @@ class ArticleServiceTest {
         return article;
     }
 
-    private Hashtag createHashtag(String hashtagName) {
-        return createHashtag(1L, hashtagName);
-    }
-
-    private Hashtag createHashtag(Long id, String hashtagName) {
-        Hashtag hashtag = Hashtag.of(hashtagName);
-        ReflectionTestUtils.setField(hashtag, "id", id);
-
-        return hashtag;
-    }
-
-    private HashtagDto createHashtagDto() {
-        return HashtagDto.of("java");
-    }
+//    private Hashtag createHashtag(String hashtagName) {
+//        return createHashtag(1L, hashtagName);
+//    }
+//
+//    private Hashtag createHashtag(Long id, String hashtagName) {
+//        Hashtag hashtag = Hashtag.of(hashtagName);
+//        ReflectionTestUtils.setField(hashtag, "id", id);
+//
+//        return hashtag;
+//    }
+//
+//    private HashtagDto createHashtagDto() {
+//        return HashtagDto.of("java");
+//    }
 
     private ArticleDto createArticleDto() {
         return createArticleDto("title", "content");
