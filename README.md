@@ -1,6 +1,27 @@
 # Article
 
 ---
+### 프로젝트
+
+Spring 과 Thymeleaf 문법을 학습하기 위해 만들어보는 게시판 서비스 입니다.
+
+
+---
+### 기술 세부 스택
+* Spring Boot Actuator
+* Spring Web
+* Spring Data JPA
+* Rest Repositories
+* Rest Repositories HAL Explorer
+* Thymeleaf
+* Spring Security
+* H2 Database
+* MySQL Driver
+* Lombok
+* Spring Boot DevTools
+* Spring Configuration Processor
+
+---
 
 ## API
 |종료|URL|Method|기능|설명|
