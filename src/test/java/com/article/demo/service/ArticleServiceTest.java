@@ -53,20 +53,44 @@ class ArticleServiceTest {
 
     @DisplayName("검색어와 함께 게시글을 검색하면, 게시글 페이지를 반환한다.")
     @Test
-    void givenSearchParameters_whenSearchingArticles_thenReturnsArticlePage() {
-        // Given
+    void SearchParameters_SearchingArticles_ReturnsArticlePage() {
         SearchType searchType = SearchType.TITLE;
         String searchKeyword = "title";
         Pageable pageable = Pageable.ofSize(20);
         given(articleRepository.findByTitleContaining(searchKeyword, pageable)).willReturn(Page.empty());
 
-        // When
         Page<ArticleDto> articles = sut.searchArticles(searchType, searchKeyword, pageable);
 
-        // Then
         assertThat(articles).isEmpty();
         then(articleRepository).should().findByTitleContaining(searchKeyword, pageable);
     }
+
+    @DisplayName("검색어없이 해시태그를 검색하면, 빈 페이지를 반환한다.")
+    @Test
+    void noSearchParameters_whenSearchingArticlesViaHashtag_thenReturnsEmptyPage() {
+
+        Pageable pageable = Pageable.ofSize(20);
+
+        Page<ArticleDto> articles = sut.searchArticlesViaHashtag(null, pageable);
+
+        assertThat(articles).isEqualTo(Page.empty(pageable));
+        then(articleRepository).shouldHaveNoInteractions();
+    }
+
+    @DisplayName("해시태그를 검색하면, 게시글 페이지를 반환한다.")
+    @Test
+    void searchParameters_whenSearchingArticlesViaHashtag_thenReturnsArticlesPage() {
+
+        String hashtag = "#java";
+        Pageable pageable = Pageable.ofSize(20);
+        given(articleRepository.findByHashtag(hashtag, pageable)).willReturn(Page.empty(pageable));
+
+        Page<ArticleDto> articles = sut.searchArticlesViaHashtag(hashtag, pageable);
+
+        assertThat(articles).isEqualTo(Page.empty(pageable));
+        then(articleRepository).should().findByHashtag(hashtag, pageable);
+    }
+
 
     @DisplayName("게시글을 조회하면, 게시글을 반환한다.")
     @Test
@@ -112,18 +136,31 @@ class ArticleServiceTest {
 
     }
 
-//    @DisplayName("게시글 ID를 입력하면, 게시글을 삭제")
-//    @Test
-//    void ArticleId_DeletingArticle_DeletesArticle() {
-//        //given
-//        willDoNothing().given(articleRepository).delete(any(Article.class));
-//        //when
-//
-//        sut.deleteArticle(1L);
-//        //then
-//
-//        then(articleRepository).should().delete(any(Article.class));
-//    }
+    @DisplayName("게시글 ID를 입력하면, 게시글을 삭제")
+    @Test
+    void articleId_DeletingArticle_DeletesArticle() {
+
+        willDoNothing().given(articleRepository).delete(any(Article.class));
+
+        sut.deleteArticle(1L);
+
+        then(articleRepository).should().delete(any(Article.class));
+    }
+
+    @DisplayName("해시태그를 조회하면, 유니크 해시태그 리스트를 반환한다")
+    @Test
+    void nothing_Calling_ReturnsHashtags() {
+        List<String> expectedHashtags = List.of("#java", "#spring", "#boot");
+        given(articleRepository.findAllDistinctHashtags()).willReturn(expectedHashtags);
+
+        List<String> actualHashtags = sut.getHashtags();
+
+        assertThat(actualHashtags).isEqualTo(expectedHashtags);
+        then(articleRepository).should().findAllDistinctHashtags();
+
+        assertThat(actualHashtags).isEqualTo(expectedHashtags);
+        then(articleRepository).should().findAllDistinctHashtags();
+    }
 
     private UserAccount createUserAccount() {
         return createUserAccount("kim");
