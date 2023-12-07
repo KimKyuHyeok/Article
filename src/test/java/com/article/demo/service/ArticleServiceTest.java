@@ -2,14 +2,13 @@ package com.article.demo.service;
 
 import com.article.demo.domain.Article;
 import com.article.demo.domain.UserAccount;
-import com.article.demo.domain.type.SearchType;
+import com.article.demo.domain.constant.SearchType;
 import com.article.demo.dto.*;
 import com.article.demo.repository.ArticleRepository;
+import com.article.demo.repository.UserAccountRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
-import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,16 +16,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.doNothing;
 
 @DisplayName("비지니스 로직 - 게시글")
 @ExtendWith(MockitoExtension.class)
@@ -35,6 +32,7 @@ class ArticleServiceTest {
     @InjectMocks private ArticleService sut;
 
     @Mock private ArticleRepository articleRepository;
+    @Mock private UserAccountRepository userAccountRepository;
 
     @DisplayName("검색어 없이 게시글을 검색하면, 게시글 페이지를 반환")
     @Test
@@ -100,7 +98,7 @@ class ArticleServiceTest {
         given(articleRepository.findById(articleId)).willReturn(Optional.of(article));
 
 
-        ArticleWithCommentsDto dto = sut.getArticle(articleId);
+        ArticleDto dto = sut.getArticle(articleId);
 
 
         assertThat(dto)
@@ -108,6 +106,38 @@ class ArticleServiceTest {
                 .hasFieldOrPropertyWithValue("content", article.getContent())
                 .hasFieldOrPropertyWithValue("hashtag", article.getHashtag()
                 );
+        then(articleRepository).should().findById(articleId);
+    }
+
+    @DisplayName("게시글 ID 로 조회하면, 댓글 달린 게시글을 반환한다")
+    @Test
+    void articleId_SearchingArticleWithComments_ReturnsArticleWithComments() {
+
+        Long articleId = 1L;
+        Article article = createArticle();
+        given(articleRepository.findById(articleId)).willReturn(Optional.of(article));
+
+        ArticleWithCommentsDto dto = sut.getArticleWithComments(articleId);
+
+        assertThat(dto)
+                .hasFieldOrPropertyWithValue("title", article.getTitle())
+                .hasFieldOrPropertyWithValue("content", article.getContent())
+                .hasFieldOrPropertyWithValue("hashtag", article.getHashtag());
+        then(articleRepository).should().findById(articleId);
+    }
+
+    @DisplayName("댓글 달린 게시글이 없으면, 예외를 던진다")
+    @Test
+    void nonexistentArticleId_SearchingArticleWithComments_ThrowsException() {
+
+        Long articleId = 0L;
+        given(articleRepository.findById(articleId)).willReturn(Optional.empty());
+
+        Throwable t = catchThrowable(() -> sut.getArticleWithComments(articleId));
+
+        assertThat(t)
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("게시글이 없습니다 - articleId : " + articleId);
         then(articleRepository).should().findById(articleId);
     }
 
@@ -130,7 +160,7 @@ class ArticleServiceTest {
         ArticleDto dto = createArticleDto("새 타이틀", "새 내용");
         given(articleRepository.getReferenceById(dto.id())).willReturn(article);
 
-        sut.updateArticle(dto);
+        sut.updateArticle(dto.id(), dto);
 
         then(articleRepository).should().getReferenceById(dto.id());
 
@@ -190,21 +220,6 @@ class ArticleServiceTest {
 
         return article;
     }
-
-//    private Hashtag createHashtag(String hashtagName) {
-//        return createHashtag(1L, hashtagName);
-//    }
-//
-//    private Hashtag createHashtag(Long id, String hashtagName) {
-//        Hashtag hashtag = Hashtag.of(hashtagName);
-//        ReflectionTestUtils.setField(hashtag, "id", id);
-//
-//        return hashtag;
-//    }
-//
-//    private HashtagDto createHashtagDto() {
-//        return HashtagDto.of("java");
-//    }
 
     private ArticleDto createArticleDto() {
         return createArticleDto("title", "content");

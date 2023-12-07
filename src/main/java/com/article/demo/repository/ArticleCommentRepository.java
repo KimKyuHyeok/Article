@@ -17,13 +17,15 @@ import java.util.List;
 @RepositoryRestResource
 public interface ArticleCommentRepository extends
         JpaRepository<ArticleComment, Long>,
+        QuerydslPredicateExecutor<ArticleComment>,
         QuerydslBinderCustomizer<QArticleComment> {
 
     List<ArticleComment> findByArticle_Id(Long articleId);
+//    void deleteByArticle(Long articleCommentId);
 
     @Override
     default void customize(QuerydslBindings bindings, QArticleComment root) {
-        bindings.excludeUnlistedProperties(true); //리스팅을 하지않은 프로퍼티는 검색에서 제외
+        bindings.excludeUnlistedProperties(true);
         bindings.including(root.content, root.createdAt, root.createdBy);
         bindings.bind(root.content).first(StringExpression::containsIgnoreCase);
         bindings.bind(root.createdAt).first(DateTimeExpression::eq);

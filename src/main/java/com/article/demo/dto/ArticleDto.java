@@ -2,6 +2,7 @@ package com.article.demo.dto;
 
 
 import com.article.demo.domain.Article;
+import com.article.demo.domain.UserAccount;
 
 import java.time.LocalDateTime;
 
@@ -40,7 +41,7 @@ public record ArticleDto(
         );
     }
 
-    public Article toEntity() {
+    public Article toEntity(UserAccount userAccount) {
         return Article.of(
                 userAccountDto.toEntity(),
                 title,

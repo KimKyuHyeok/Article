@@ -15,7 +15,6 @@ import java.util.Set;
 @ToString(callSuper = true)
 @Table(indexes = {
         @Index(columnList = "title"),
-        @Index(columnList = "hashtag"),
         @Index(columnList = "createdAt"),
         @Index(columnList = "createdBy")
 })
@@ -31,14 +30,6 @@ public class Article extends AuditingFields {
     @Setter @Column(nullable = false) private String title;
     @Setter @Column(nullable = false, length = 10000) private String content;
 
-//    @ToString.Exclude
-//    @JoinTable(
-//            name = "article_hashtag",
-//            joinColumns = @JoinColumn(name = "articleId"),
-//            inverseJoinColumns = @JoinColumn(name = "hashtagId")
-//    )
-//    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-//    private Set<Hashtag> hashtags = new LinkedHashSet<>();
 
     @Setter @Column(length = 100) private String hashtag;
 
@@ -72,15 +63,5 @@ public class Article extends AuditingFields {
         return Objects.hash(id);
     }
 
-//    public void addHashtag(Hashtag hashtag) {
-//        this.getHashtags().add(hashtag);
-//    }
-//
-//    public void addHashtags(Collection<Hashtag> hashtags) {
-//        this.getHashtags().addAll(hashtags);
-//    }
-//
-//    public void clearHashtags() {
-//        this.getHashtags().clear();
-//    }
+
 }
