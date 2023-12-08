@@ -33,10 +33,6 @@ public class ArticleComment extends AuditingFields {
     @Setter @ManyToOne(optional = false) private Article article;
     @Setter @Column(nullable = false, length = 500) private String content;
 
-    @Setter
-    @Column(updatable = false)
-    private Long parentCommentId; // 부모 댓글 ID
-
 
     protected ArticleComment() {
     }
